@@ -142,8 +142,8 @@ Replace `[PORT]` with your MCP server's port number.
 
 ### Azure Environment
 The workflow is pre-configured with:
-- **Tenant ID**: 61820f86-d873-4fcd-9dca-5e4b56a827fe
-- **Subscription ID**: 8337c4b9-066a-497f-921c-b26a453d3325
+- **Tenant ID**: `YOUR_AZURE_TENANT_ID`
+- **Subscription ID**: `YOUR_AZURE_SUBSCRIPTION_ID`
 
 ### System Prompt
 The AI agent is configured with a specialized system prompt that:

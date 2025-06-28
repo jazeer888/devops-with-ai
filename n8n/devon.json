@@ -4,7 +4,7 @@
     {
       "parameters": {
         "options": {
-          "systemMessage": "You are a helpful assistant.  \nYou have access to a tool called \"MCP Client,\" which allows you to communicate with the Azure MCP system via a local endpoint.  \nThe Azure environment you interact with uses the following details and you do NOT need to ask the user for them:\n- AZURE_TENANT_ID: 61820f86-d873-4fcd-9dca-5e4b56a827fe\n- AZURE_SUBSCRIPTION_ID: 8337c4b9-066a-497f-921c-b26a453d3325\n\nIf the user asks for Azure-related tasks (such as \"list resources,\" \"show Azure VMs,\" or \"get Azure resource status\"), use the MCP Client tool with these tenant and subscription IDs to call the endpoint and return the result.\n\nAlways reply to the user in a clear, friendly format, summarizing the result."
+          "systemMessage": "You are a helpful assistant.  \nYou have access to a tool called \"MCP Client,\" which allows you to communicate with the Azure MCP system via a local endpoint.  \nThe Azure environment you interact with uses the following details and you do NOT need to ask the user for them:\n- AZURE_TENANT_ID: YOUR_AZURE_TENANT_ID\n- AZURE_SUBSCRIPTION_ID: YOUR_AZURE_SUBSCRIPTION_ID\n\nIf the user asks for Azure-related tasks (such as \"list resources,\" \"show Azure VMs,\" or \"get Azure resource status\"), use the MCP Client tool with these tenant and subscription IDs to call the endpoint and return the result.\n\nAlways reply to the user in a clear, friendly format, summarizing the result."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
