@@ -1,0 +1,209 @@
+{
+  "name": "devon TELE",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "You are a helpful assistant.\n\nYou have access to a tool called \"MCP Client,\" which allows you to communicate with both the Azure MCP system and the Kubernetes MCP server via a local endpoint.\n\nThe Azure environment you interact with uses the following details, and you do NOT need to ask the user for them:\n- AZURE_TENANT_ID: 61820f86-d873-4fcd-9dca-5e4b56a827fe\n- AZURE_SUBSCRIPTION_ID: 8337c4b9-066a-497f-921c-b26a453d3325\n\nIf the user asks for Azure-related tasks (such as \"list resources,\" \"show Azure VMs,\" or \"get Azure resource status\"), use the MCP Client tool with these tenant and subscription IDs to call the Azure endpoint.\n\nIf the user asks about clusters, AKS, k8s, or Kubernetes, use the MCP Client tool to interact with the Kubernetes MCP server.\n\nAlways reply to the user in a clear and simple format that is easy for humans to read. When presenting lists or multiple items, organize the results as a readable table if possible (for example, using markdown for Telegram messages). Focus on clarity and friendliness in your summaries."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        680,
+        0
+      ],
+      "id": "4b1e15c6-599a-4e6d-b25f-2fad4f2956a1",
+      "name": "AI Agent",
+      "executeOnce": false,
+      "notesInFlow": false,
+      "notes": "check incomming message and execute the azure command with azure mcp client connected with help open ai chat model"
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        580,
+        280
+      ],
+      "id": "f4e0d51a-6c0c-4379-a808-1225795344fc",
+      "name": "Azure OpenAI Chat Model",
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "y16X1iEdoE9BhSVE",
+          "name": "Azure Open AI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "http://host.docker.internal:5008/sse"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        940,
+        280
+      ],
+      "id": "be17896c-a5e1-4439-8a6d-8ef9ccc6dddb",
+      "name": "Azure MCP"
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "http://host.docker.internal:8080/sse"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        280
+      ],
+      "id": "cbc6ae9a-8fde-4822-bfff-1881f464588a",
+      "name": "MCP k8"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "=chat_with_{{ $('Telegram Trigger').first().json.message.chat.id }}",
+        "contextWindowLength": 30
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        740,
+        280
+      ],
+      "id": "72bf0df4-7816-460f-8b3b-82ebebaef9e7",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "updates": "={{ [\"message\"] }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        280,
+        0
+      ],
+      "id": "e26aecc0-18c8-447f-a6e3-9b485bb9742f",
+      "name": "Telegram Trigger",
+      "webhookId": "03d19cb4-5ec8-4564-8f55-3b5ccd44de2b",
+      "credentials": {
+        "telegramApi": {
+          "id": "8xtGF7Vya2KA1BOU",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').first().json.message.from.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "41e0841c-ce47-4770-8a70-dbd220c66b73",
+      "name": "Telegram",
+      "webhookId": "58f66b69-1a2b-4fec-be89-1f658989a0b2",
+      "credentials": {
+        "telegramApi": {
+          "id": "8xtGF7Vya2KA1BOU",
+          "name": "Telegram account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Azure OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Azure MCP": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP k8": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "773163a8-8fbf-450f-b780-43f9b1e5f20d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d2ccfeb619900236191a5f5bf6d4ad60d12a9bc87e0932fa08ba72c42dbf2415"
+  },
+  "id": "PBINI6JtbxM50pKJ",
+  "tags": []
+}

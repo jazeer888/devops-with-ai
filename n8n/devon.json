@@ -1,0 +1,194 @@
+{
+  "name": "devon",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a helpful assistant.  \nYou have access to a tool called \"MCP Client,\" which allows you to communicate with the Azure MCP system via a local endpoint.  \nThe Azure environment you interact with uses the following details and you do NOT need to ask the user for them:\n- AZURE_TENANT_ID: 61820f86-d873-4fcd-9dca-5e4b56a827fe\n- AZURE_SUBSCRIPTION_ID: 8337c4b9-066a-497f-921c-b26a453d3325\n\nIf the user asks for Azure-related tasks (such as \"list resources,\" \"show Azure VMs,\" or \"get Azure resource status\"), use the MCP Client tool with these tenant and subscription IDs to call the endpoint and return the result.\n\nAlways reply to the user in a clear, friendly format, summarizing the result."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        680,
+        0
+      ],
+      "id": "6fa8b864-f0b7-4a96-94b7-6422ef863495",
+      "name": "AI Agent",
+      "executeOnce": false,
+      "notes": "check incomming message and execute the azure command with azure mcp client connected with help open ai chat model"
+    },
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        40,
+        -20
+      ],
+      "id": "583db142-4294-4b11-b8f1-87089407f581",
+      "name": "When chat message received",
+      "webhookId": "574ab0e9-82ee-4fba-af23-f9b81a23c58b"
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        540,
+        220
+      ],
+      "id": "c0a4f28d-b1cf-4494-bde3-380da2d0db5e",
+      "name": "Azure OpenAI Chat Model",
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "y16X1iEdoE9BhSVE",
+          "name": "Azure Open AI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "http://host.docker.internal:5008/sse"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        980,
+        220
+      ],
+      "id": "014aa3d0-ad61-43e6-b672-4a22d424d899",
+      "name": "Azure MCP"
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "http://host.docker.internal:8080/sse"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        240
+      ],
+      "id": "3951db9b-fdf1-435e-888a-599cedf7c828",
+      "name": "MCP k8"
+    },
+    {
+      "parameters": {
+        "updates": "={{ [\"message\"] }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        40,
+        340
+      ],
+      "id": "b3a6a5de-09d6-4d45-959a-31338a9a6a2e",
+      "name": "Telegram Trigger",
+      "webhookId": "e9dc8b61-3cba-4aab-af59-3b8a6b9efee5",
+      "credentials": {
+        "telegramApi": {
+          "id": "8xtGF7Vya2KA1BOU",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        780,
+        220
+      ],
+      "id": "53738f02-21bc-43ff-a232-41f4db7c632f",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Azure OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Azure MCP": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP k8": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        []
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c8f1cce8-38d9-4e05-9cb1-2a80114fda13",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d2ccfeb619900236191a5f5bf6d4ad60d12a9bc87e0932fa08ba72c42dbf2415"
+  },
+  "id": "tstm28m1PmYj8FNz",
+  "tags": []
+}
